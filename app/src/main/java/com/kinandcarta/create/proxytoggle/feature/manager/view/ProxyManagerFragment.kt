@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -12,6 +13,8 @@ import com.kinandcarta.create.proxytoggle.R
 import com.kinandcarta.create.proxytoggle.databinding.FragmentProxyManagerBinding
 import com.kinandcarta.create.proxytoggle.feature.manager.viewmodel.ProxyManagerViewModel
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.android.synthetic.main.fragment_proxy_manager.*
+import java.net.InetAddress
 
 @AndroidEntryPoint
 class ProxyManagerFragment : Fragment() {
@@ -38,6 +41,21 @@ class ProxyManagerFragment : Fragment() {
 
         observeProxyState()
         observeProxyEvent()
+
+        autofill.setOnClickListener {
+            if (binding.inputLayoutAddress.isEnabled) {
+                Thread(Runnable {
+                    val address: InetAddress = InetAddress.getByName("www.baidu.com")
+                    val ip: String = address.getHostAddress()
+
+                    activity?.runOnUiThread(Runnable {
+                        binding.inputLayoutAddress.editText?.setText(ip)
+                    })
+                }).start()
+            } else {
+                Toast.makeText(view.context, "不可写", Toast.LENGTH_SHORT).show()
+            }
+        }
     }
 
     private fun observeProxyEvent() {
